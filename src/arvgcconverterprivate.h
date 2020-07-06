@@ -40,6 +40,7 @@ ArvGcDisplayNotation	arv_gc_converter_get_display_notation	(ArvGcConverter *gc_c
 gint64			arv_gc_converter_get_display_precision	(ArvGcConverter *gc_converter);
 const char * 		arv_gc_converter_get_unit	 	(ArvGcConverter *gc_converter);
 ArvGcIsLinear		arv_gc_converter_get_is_linear		(ArvGcConverter *gc_converter, GError **error);
+ArvGcAccessMode		arv_gc_converter_get_access_mode	(ArvGcConverter *gc_converter, ArvGcAccessMode default_value);
 
 gint64 			arv_gc_converter_convert_to_int64 	(ArvGcConverter *gc_converter, ArvGcConverterNodeType node_type,
 								 GError **error);

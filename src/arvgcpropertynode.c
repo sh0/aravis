@@ -31,8 +31,16 @@
 #include <arvgcpropertynode.h>
 #include <arvgcfeaturenode.h>
 #include <arvgcinteger.h>
+#include <arvgcintegernode.h>
 #include <arvgcfloat.h>
+#include <arvgcfloatnode.h>
+#include <arvgcconverterprivate.h>
+#include <arvgcswissknife.h>
 #include <arvgcstring.h>
+#include <arvgcboolean.h>
+#include <arvgcenumeration.h>
+#include <arvgccommand.h>
+#include <arvgcregisternodeprivate.h>
 #include <arvgc.h>
 #include <arvdomtext.h>
 #include <arvmisc.h>
@@ -844,22 +852,46 @@ arv_gc_property_node_get_access_mode (ArvGcPropertyNode *self, ArvGcAccessMode d
 {
 	ArvGcPropertyNodePrivate *priv = arv_gc_property_node_get_instance_private (self);
 	const char *value;
-
-	if (self == NULL)
-		return default_value;
+	ArvDomNode *pvalue_node;
 
 	g_return_val_if_fail (ARV_IS_GC_PROPERTY_NODE (self), default_value);
-	g_return_val_if_fail (priv->type == ARV_GC_PROPERTY_NODE_TYPE_ACCESS_MODE ||
-			      priv->type == ARV_GC_PROPERTY_NODE_TYPE_IMPOSED_ACCESS_MODE, default_value);
 
-	value = _get_value_data (self);
+	if (priv->type == ARV_GC_PROPERTY_NODE_TYPE_ACCESS_MODE ||
+	    priv->type == ARV_GC_PROPERTY_NODE_TYPE_IMPOSED_ACCESS_MODE) {
 
-	if (g_strcmp0 (value, "RO") == 0)
+		value = _get_value_data (self);
+
+		if (g_strcmp0 (value, "RO") == 0)
+			return ARV_GC_ACCESS_MODE_RO;
+		else if (g_strcmp0 (value, "WO") == 0)
+			return ARV_GC_ACCESS_MODE_WO;
+
+		return default_value;
+	}
+
+	pvalue_node = _get_pvalue_node (self);
+	if (pvalue_node == NULL)
+		return default_value;
+
+	if (ARV_IS_GC_REGISTER_NODE (pvalue_node)) {
+		return arv_gc_register_node_get_access_mode (ARV_GC_REGISTER_NODE (pvalue_node), default_value);
+	} else if (ARV_IS_GC_BOOLEAN (pvalue_node)) {
+		return arv_gc_boolean_get_access_mode (ARV_GC_BOOLEAN (pvalue_node), default_value);
+	} else if (ARV_IS_GC_FLOAT_NODE (pvalue_node)) {
+		return arv_gc_float_node_get_access_mode (ARV_GC_FLOAT_NODE (pvalue_node), default_value);
+	} else if (ARV_IS_GC_INTEGER_NODE (pvalue_node)) {
+		return arv_gc_integer_node_get_access_mode (ARV_GC_INTEGER_NODE (pvalue_node), default_value);
+	} else if (ARV_IS_GC_CONVERTER (pvalue_node)) {
+		return arv_gc_converter_get_access_mode (ARV_GC_CONVERTER (pvalue_node), default_value);
+	} else if (ARV_IS_GC_SWISS_KNIFE (pvalue_node)) {
 		return ARV_GC_ACCESS_MODE_RO;
-	else if (g_strcmp0 (value, "WO") == 0)
-		return ARV_GC_ACCESS_MODE_WO;
+	} else if (ARV_IS_GC_ENUMERATION (pvalue_node)) {
+		return arv_gc_enumeration_get_access_mode (ARV_GC_ENUMERATION (pvalue_node), default_value);
+	} else if (ARV_IS_GC_COMMAND (pvalue_node)) {
+		return arv_gc_command_get_access_mode (ARV_GC_COMMAND (pvalue_node), default_value);
+	}
 
-	return ARV_GC_ACCESS_MODE_RW;
+	return default_value;
 }
 
 ArvGcNode *

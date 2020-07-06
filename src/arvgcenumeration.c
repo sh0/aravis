@@ -514,6 +514,29 @@ arv_gc_enumeration_get_entries (ArvGcEnumeration *enumeration)
 	return enumeration->entries;
 }
 
+/**
+ * arv_gc_enumeration_get_access_mode:
+ * @enumeration: a #ArvGcEnumeration
+ * @default_value: default #ArvGcAccessMode value
+ *
+ * Get allowed feature access mode.
+ *
+ * Returns: Allowed access mode as #ArvGcAccessMode.
+ *
+ * Since: 0.8.0
+ */
+
+ArvGcAccessMode
+arv_gc_enumeration_get_access_mode (ArvGcEnumeration *enumeration, ArvGcAccessMode default_value)
+{
+	g_return_val_if_fail (ARV_IS_GC_ENUMERATION (enumeration), default_value);
+
+	if (enumeration->value == NULL)
+		return default_value;
+
+	return arv_gc_property_node_get_access_mode (ARV_GC_PROPERTY_NODE (enumeration->value), default_value);
+}
+
 ArvGcNode *
 arv_gc_enumeration_new (void)
 {

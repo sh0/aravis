@@ -213,6 +213,29 @@ arv_gc_boolean_set_value (ArvGcBoolean *gc_boolean, gboolean v_boolean, GError *
 		g_propagate_error (error, local_error);
 }
 
+/**
+ * arv_gc_boolean_get_access_mode:
+ * @gc_boolean: a #ArvGcBoolean
+ * @default_value: default #ArvGcAccessMode value
+ *
+ * Get allowed feature access mode.
+ *
+ * Returns: Allowed access mode as #ArvGcAccessMode.
+ *
+ * Since: 0.8.0
+ */
+
+ArvGcAccessMode
+arv_gc_boolean_get_access_mode (ArvGcBoolean *gc_boolean, ArvGcAccessMode default_value)
+{
+	g_return_val_if_fail (ARV_IS_GC_BOOLEAN (gc_boolean), default_value);
+
+	if (gc_boolean->value == NULL)
+		return default_value;
+
+	return arv_gc_property_node_get_access_mode (gc_boolean->value, default_value);
+}
+
 ArvGcNode *
 arv_gc_boolean_new (void)
 {

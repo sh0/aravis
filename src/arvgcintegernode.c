@@ -175,6 +175,29 @@ arv_gc_integer_node_new (void)
 	return node;
 }
 
+/**
+ * arv_gc_integer_node_get_access_mode:
+ * @gc_integer_node: a #ArvGcIntegerNode
+ * @default_value: default #ArvGcAccessMode value
+ *
+ * Get allowed feature access mode.
+ *
+ * Returns: Allowed access mode as #ArvGcAccessMode.
+ *
+ * Since: 0.8.0
+ */
+
+ArvGcAccessMode
+arv_gc_integer_node_get_access_mode (ArvGcIntegerNode *gc_integer_node, ArvGcAccessMode default_value)
+{
+	g_return_val_if_fail (ARV_IS_GC_INTEGER_NODE (gc_integer_node), default_value);
+
+	if (gc_integer_node->value == NULL)
+		return default_value;
+
+	return arv_gc_property_node_get_access_mode (gc_integer_node->value, default_value);
+}
+
 static void
 arv_gc_integer_node_init (ArvGcIntegerNode *gc_integer_node)
 {

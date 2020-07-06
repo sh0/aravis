@@ -48,6 +48,8 @@ gint64 *	arv_gc_enumeration_dup_available_int_values	(ArvGcEnumeration *enumerat
 const char **	arv_gc_enumeration_dup_available_string_values	(ArvGcEnumeration *enumeration,	guint *n_values, GError **error);
 const char **	arv_gc_enumeration_dup_available_display_names 	(ArvGcEnumeration *enumeration, guint *n_values, GError **error);
 
+ArvGcAccessMode arv_gc_enumeration_get_access_mode		(ArvGcEnumeration *enumeration, ArvGcAccessMode default_value);
+
 G_END_DECLS
 
 #endif

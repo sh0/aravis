@@ -36,7 +36,9 @@ G_BEGIN_DECLS
 #define ARV_TYPE_GC_FLOAT_NODE             (arv_gc_float_node_get_type ())
 G_DECLARE_FINAL_TYPE (ArvGcFloatNode, arv_gc_float_node, ARV, GC_FLOAT_NODE, ArvGcFeatureNode)
 
-ArvGcNode * 	arv_gc_float_node_new 		(void);
+ArvGcNode * 	arv_gc_float_node_new			(void);
+
+ArvGcAccessMode arv_gc_float_node_get_access_mode	(ArvGcFloatNode *gc_float_node, ArvGcAccessMode default_value);
 
 G_END_DECLS
 

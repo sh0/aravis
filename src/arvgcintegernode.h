@@ -36,7 +36,9 @@ G_BEGIN_DECLS
 #define ARV_TYPE_GC_INTEGER_NODE             (arv_gc_integer_node_get_type ())
 G_DECLARE_FINAL_TYPE (ArvGcIntegerNode, arv_gc_integer_node, ARV, GC_INTEGER_NODE, ArvGcFeatureNode)
 
-ArvGcNode * 	arv_gc_integer_node_new 	(void);
+ArvGcNode * 	arv_gc_integer_node_new			(void);
+
+ArvGcAccessMode arv_gc_integer_node_get_access_mode	(ArvGcIntegerNode *gc_integer_node, ArvGcAccessMode default_value);
 
 G_END_DECLS
 

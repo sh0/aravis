@@ -25,6 +25,9 @@
 
 #include <arvgcregisternode.h>
 
+ArvGcAccessMode arv_gc_register_node_get_access_mode		(ArvGcRegisterNode *gc_register_node,
+								 ArvGcRepresentation default_value);
+
 gint64 		arv_gc_register_node_get_masked_integer_value 	(ArvGcRegisterNode *gc_register_node,
 								 guint lsb, guint msb,
 								 ArvGcSignedness signedness, guint endianness,

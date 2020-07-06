@@ -39,6 +39,8 @@ G_DECLARE_FINAL_TYPE (ArvGcCommand, arv_gc_command, ARV, GC_COMMAND, ArvGcFeatur
 ArvGcNode * 	arv_gc_command_new 		(void);
 void 		arv_gc_command_execute 		(ArvGcCommand *gc_command, GError **error);
 
+ArvGcAccessMode arv_gc_command_get_access_mode	(ArvGcCommand *gc_command, ArvGcAccessMode default_value);
+
 G_END_DECLS
 
 #endif
