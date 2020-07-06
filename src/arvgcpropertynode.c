@@ -844,22 +844,31 @@ arv_gc_property_node_get_access_mode (ArvGcPropertyNode *self, ArvGcAccessMode d
 {
 	ArvGcPropertyNodePrivate *priv = arv_gc_property_node_get_instance_private (self);
 	const char *value;
-
-	if (self == NULL)
-		return default_value;
+	ArvDomNode *pvalue_node;
 
 	g_return_val_if_fail (ARV_IS_GC_PROPERTY_NODE (self), default_value);
-	g_return_val_if_fail (priv->type == ARV_GC_PROPERTY_NODE_TYPE_ACCESS_MODE ||
-			      priv->type == ARV_GC_PROPERTY_NODE_TYPE_IMPOSED_ACCESS_MODE, default_value);
 
-	value = _get_value_data (self);
+	if (priv->type == ARV_GC_PROPERTY_NODE_TYPE_ACCESS_MODE ||
+	    priv->type == ARV_GC_PROPERTY_NODE_TYPE_IMPOSED_ACCESS_MODE) {
 
-	if (g_strcmp0 (value, "RO") == 0)
-		return ARV_GC_ACCESS_MODE_RO;
-	else if (g_strcmp0 (value, "WO") == 0)
-		return ARV_GC_ACCESS_MODE_WO;
+		value = _get_value_data (self);
 
-	return ARV_GC_ACCESS_MODE_RW;
+		if (g_strcmp0 (value, "RO") == 0)
+			return ARV_GC_ACCESS_MODE_RO;
+		else if (g_strcmp0 (value, "WO") == 0)
+			return ARV_GC_ACCESS_MODE_WO;
+
+		return default_value;
+	}
+
+	pvalue_node = _get_pvalue_node (self);
+	if (pvalue_node == NULL)
+		return default_value;
+
+	if (ARV_IS_GC_FEATURE_NODE(pvalue_node))
+		return arv_gc_feature_node_get_access_mode (ARV_GC_FEATURE_NODE (pvalue_node));
+
+	return default_value;
 }
 
 ArvGcNode *

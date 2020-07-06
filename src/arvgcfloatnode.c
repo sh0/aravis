@@ -26,6 +26,7 @@
  */
 
 #include <arvgcfloatnode.h>
+#include <arvgcfloatnodeprivate.h>
 #include <arvgcfloat.h>
 #include <arvgcinteger.h>
 #include <arvgcvalueindexednode.h>
@@ -172,6 +173,29 @@ arv_gc_float_node_new (void)
 	node = g_object_new (ARV_TYPE_GC_FLOAT_NODE, NULL);
 
 	return node;
+}
+
+/**
+ * arv_gc_float_node_get_access_mode:
+ * @gc_float_node: a #ArvGcFloatNode
+ * @default_value: default #ArvGcAccessMode value
+ *
+ * Get allowed feature access mode.
+ *
+ * Returns: Allowed access mode as #ArvGcAccessMode.
+ *
+ * Since: 0.8.0
+ */
+
+ArvGcAccessMode
+arv_gc_float_node_get_access_mode (ArvGcFloatNode *gc_float_node, ArvGcAccessMode default_value)
+{
+	g_return_val_if_fail (ARV_IS_GC_FLOAT_NODE (gc_float_node), default_value);
+
+	if (gc_float_node->value == NULL)
+		return default_value;
+
+	return arv_gc_property_node_get_access_mode (gc_float_node->value, default_value);
 }
 
 static void

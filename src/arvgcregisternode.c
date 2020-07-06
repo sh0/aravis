@@ -305,12 +305,15 @@ _get_cache (ArvGcRegisterNode *self, gint64 *address, gint64 *length, GError **e
 	return cache;
 }
 
-static ArvGcAccessMode
-_get_access_mode (ArvGcRegisterNode *self)
+ArvGcAccessMode
+arv_gc_register_node_get_access_mode (ArvGcRegisterNode *self, ArvGcRepresentation default_value)
 {
 	ArvGcRegisterNodePrivate *priv = arv_gc_register_node_get_instance_private (ARV_GC_REGISTER_NODE (self));
 
-	return arv_gc_property_node_get_access_mode(priv->access_mode, ARV_GC_ACCESS_MODE_RW);
+	if (priv->access_mode == NULL)
+		return default_value;
+
+	return arv_gc_property_node_get_access_mode(priv->access_mode, default_value);
 }
 
 static void
@@ -662,7 +665,7 @@ _set_integer_value (ArvGcRegisterNode *gc_register_node,
 		gint64 current_value;
 		guint64 mask;
 
-		if (ARV_GC_ACCESS_MODE_WO != _get_access_mode(gc_register_node)) {
+		if (ARV_GC_ACCESS_MODE_WO != arv_gc_register_node_get_access_mode(gc_register_node, ARV_GC_ACCESS_MODE_RW)) {
 			_read_from_port (gc_register_node, address, length, cache, cachable, &local_error);
 			if (local_error != NULL) {
 				g_propagate_error (error, local_error);

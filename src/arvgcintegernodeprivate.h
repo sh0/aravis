@@ -20,24 +20,19 @@
  * Author: Emmanuel Pacaud <emmanuel@gnome.org>
  */
 
-#ifndef ARV_GC_REGISTER_NODE_PRIVATE_H
-#define ARV_GC_REGISTER_NODE_PRIVATE_H
+#ifndef ARV_GC_INTEGER_NODE_PRIVATE_H
+#define ARV_GC_INTEGER_NODE_PRIVATE_H
 
-#include <arvgcregisternode.h>
+#if !defined (ARV_H_INSIDE) && !defined (ARAVIS_COMPILATION)
+#error "Only <arv.h> can be included directly."
+#endif
 
-ArvGcAccessMode arv_gc_register_node_get_access_mode		(ArvGcRegisterNode *gc_register_node,
-								 ArvGcRepresentation default_value);
+#include <arvgcintegernode.h>
 
-gint64 		arv_gc_register_node_get_masked_integer_value 	(ArvGcRegisterNode *gc_register_node,
-								 guint lsb, guint msb,
-								 ArvGcSignedness signedness, guint endianness,
-								 ArvGcCachable cachable,
-								 gboolean is_masked, GError **error);
-void 		arv_gc_register_node_set_masked_integer_value 	(ArvGcRegisterNode *gc_register_node,
-								 guint lsb, guint msb,
-								 ArvGcSignedness signedness, guint endianness,
-								 ArvGcCachable cachable,
-								 gboolean is_masked,
-								 gint64 value, GError **error);
+G_BEGIN_DECLS
+
+ArvGcAccessMode arv_gc_integer_node_get_access_mode (ArvGcIntegerNode *gc_integer_node, ArvGcAccessMode default_value);
+
+G_END_DECLS
 
 #endif

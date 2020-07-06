@@ -632,6 +632,7 @@ arv_gc_feature_node_is_available
 arv_gc_feature_node_is_implemented
 arv_gc_feature_node_is_locked
 arv_gc_feature_node_get_visibility
+arv_gc_feature_node_get_access_mode
 <SUBSECTION Standard>
 ARV_GC_FEATURE_NODE
 ARV_IS_GC_FEATURE_NODE
@@ -702,6 +703,7 @@ ARV_IS_GC_INTEGER_NODE_CLASS
 ARV_GC_INTEGER_NODE_GET_CLASS
 <SUBSECTION Private>
 ArvGcIntegerNodeClass
+arv_gc_integer_node_get_access_mode
 </SECTION>
 
 <SECTION>
@@ -727,6 +729,7 @@ ARV_IS_GC_ENUMERATION_CLASS
 ARV_GC_ENUMERATION_GET_CLASS
 <SUBSECTION Private>
 ArvGcEnumerationClass
+arv_gc_enumeration_get_access_mode
 </SECTION>
 
 <SECTION>
@@ -1071,6 +1074,7 @@ ARV_GC_BOOLEAN_GET_CLASS
 <SUBSECTION Private>
 ArvGcBooleanClass
 arv_gc_boolean_get_value_gi
+arv_gc_boolean_get_access_mode
 </SECTION>
 
 <SECTION>
@@ -1316,6 +1320,7 @@ ARV_IS_GC_FLOAT_NODE_CLASS
 ARV_GC_FLOAT_NODE_GET_CLASS
 <SUBSECTION Private>
 ArvGcFloatNodeClass
+arv_gc_float_node_get_access_mode
 </SECTION>
 
 <SECTION>
@@ -1334,6 +1339,7 @@ ARV_IS_GC_COMMAND_CLASS
 ARV_GC_COMMAND_GET_CLASS
 <SUBSECTION Private>
 ArvGcCommandClass
+arv_gc_command_get_access_mode
 </SECTION>
 
 <SECTION>

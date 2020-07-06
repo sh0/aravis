@@ -31,11 +31,17 @@
 #include <arvgcfeaturenode.h>
 #include <arvgcpropertynode.h>
 #include <arvgc.h>
-#include <arvgcboolean.h>
+#include <arvgcbooleanprivate.h>
+#include <arvgcconverterprivate.h>
 #include <arvgcinteger.h>
+#include <arvgcintegernodeprivate.h>
 #include <arvgcfloat.h>
+#include <arvgcfloatnodeprivate.h>
 #include <arvgcstring.h>
-#include <arvgcenumeration.h>
+#include <arvgcenumerationprivate.h>
+#include <arvgccommandprivate.h>
+#include <arvgcswissknife.h>
+#include <arvgcregisternodeprivate.h>
 #include <arvgcenums.h>
 #include <arvmisc.h>
 #include <arvdebug.h>
@@ -53,7 +59,6 @@ typedef struct {
 	ArvGcPropertyNode *is_implemented;
 	ArvGcPropertyNode *is_available;
 	ArvGcPropertyNode *is_locked;
-	ArvGcPropertyNode *access_mode;
 	ArvGcPropertyNode *imposed_access_mode;
 
 	guint64 change_count;
@@ -101,9 +106,6 @@ arv_gc_feature_node_post_new_child (ArvDomNode *self, ArvDomNode *child)
 			case ARV_GC_PROPERTY_NODE_TYPE_P_IS_LOCKED:
 				priv->is_locked = property_node;
 				break;
-			case ARV_GC_PROPERTY_NODE_TYPE_ACCESS_MODE:
-				priv->access_mode = property_node;
-				break;
 			case ARV_GC_PROPERTY_NODE_TYPE_IMPOSED_ACCESS_MODE:
 				priv->imposed_access_mode = property_node;
 				break;
@@ -142,9 +144,6 @@ arv_gc_feature_node_pre_remove_child (ArvDomNode *self, ArvDomNode *child)
 				break;
 			case ARV_GC_PROPERTY_NODE_TYPE_P_IS_LOCKED:
 				priv->is_locked = NULL;
-				break;
-			case ARV_GC_PROPERTY_NODE_TYPE_ACCESS_MODE:
-				priv->access_mode = NULL;
 				break;
 			case ARV_GC_PROPERTY_NODE_TYPE_IMPOSED_ACCESS_MODE:
 				priv->imposed_access_mode =  NULL;
@@ -352,18 +351,55 @@ arv_gc_feature_node_is_locked (ArvGcFeatureNode *gc_feature_node, GError **error
 	return value;
 }
 
-#if 0
+/**
+ * arv_gc_feature_node_get_access_mode:
+ * @gc_feature_node: a #ArvGcFeatureNode
+ *
+ * Gets feature node allowed access mode. This is a combination of Genicam ImposedAccessMode and
+ * AccessMode properties of underlying features and registers.
+ *
+ * Returns: Access mode as #ArvGcAccessMode
+ *
+ * Since: 0.8.0
+ */
+
 ArvGcAccessMode
-arv_gc_feature_node_get_access_mode (ArvGcFeatureNode *self)
+arv_gc_feature_node_get_access_mode (ArvGcFeatureNode *gc_feature_node)
 {
-	g_return_val_if_fail (ARV_IS_GC_FEATURE_NODE (self), ARV_GC_ACCESS_MODE_RW);
+	ArvGcFeatureNodePrivate *priv = arv_gc_feature_node_get_instance_private (gc_feature_node);
+	ArvGcAccessMode access_mode = ARV_GC_ACCESS_MODE_RW;
+	ArvGcAccessMode imposed_access_mode = ARV_GC_ACCESS_MODE_RW;
 
-	if (ARV_IS_GC_PROPERTY_NODE (self->priv->imposed_access_mode))
-	    return arv_gc_property_node_get_access_mode (self->priv->imposed_access_mode, ARV_GC_ACCESS_MODE_RW);
+	g_return_val_if_fail (ARV_IS_GC_FEATURE_NODE (gc_feature_node), ARV_GC_ACCESS_MODE_RW);
 
-	return arv_gc_property_node_get_access_mode (self->priv->access_mode, ARV_GC_ACCESS_MODE_RW);
+	if (ARV_IS_GC_REGISTER_NODE (gc_feature_node)) {
+		access_mode = arv_gc_register_node_get_access_mode (ARV_GC_REGISTER_NODE (gc_feature_node), access_mode);
+	} else if (ARV_IS_GC_BOOLEAN (gc_feature_node)) {
+		access_mode = arv_gc_boolean_get_access_mode (ARV_GC_BOOLEAN (gc_feature_node), access_mode);
+	} else if (ARV_IS_GC_FLOAT_NODE (gc_feature_node)) {
+		access_mode = arv_gc_float_node_get_access_mode (ARV_GC_FLOAT_NODE (gc_feature_node), access_mode);
+	} else if (ARV_IS_GC_INTEGER_NODE (gc_feature_node)) {
+		access_mode = arv_gc_integer_node_get_access_mode (ARV_GC_INTEGER_NODE (gc_feature_node), access_mode);
+	} else if (ARV_IS_GC_CONVERTER (gc_feature_node)) {
+		access_mode = arv_gc_converter_get_access_mode (ARV_GC_CONVERTER (gc_feature_node), access_mode);
+	} else if (ARV_IS_GC_SWISS_KNIFE (gc_feature_node)) {
+		access_mode = ARV_GC_ACCESS_MODE_RO;
+	} else if (ARV_IS_GC_ENUMERATION (gc_feature_node)) {
+		access_mode = arv_gc_enumeration_get_access_mode (ARV_GC_ENUMERATION (gc_feature_node), access_mode);
+	} else if (ARV_IS_GC_COMMAND (gc_feature_node)) {
+		access_mode = arv_gc_command_get_access_mode (ARV_GC_COMMAND (gc_feature_node), access_mode);
+	}
+
+	if (ARV_IS_GC_PROPERTY_NODE (priv->imposed_access_mode))
+	    imposed_access_mode = arv_gc_property_node_get_access_mode (priv->imposed_access_mode, imposed_access_mode);
+
+	if (access_mode == ARV_GC_ACCESS_MODE_RO && imposed_access_mode == ARV_GC_ACCESS_MODE_RW) {
+		imposed_access_mode = ARV_GC_ACCESS_MODE_RO;
+	} else if (access_mode == ARV_GC_ACCESS_MODE_WO && imposed_access_mode == ARV_GC_ACCESS_MODE_RW) {
+		imposed_access_mode = ARV_GC_ACCESS_MODE_WO;
+	}
+	return imposed_access_mode;
 }
-#endif
 
 /**
  * arv_gc_feature_node_set_value_from_string:

@@ -577,3 +577,16 @@ arv_gc_converter_get_display_precision (ArvGcConverter *gc_converter)
 
 	return arv_gc_property_node_get_display_precision (ARV_GC_PROPERTY_NODE (priv->display_precision), ARV_GC_DISPLAY_PRECISION_DEFAULT);
 }
+
+ArvGcAccessMode
+arv_gc_converter_get_access_mode (ArvGcConverter *gc_converter, ArvGcAccessMode default_value)
+{
+	ArvGcConverterPrivate *priv = arv_gc_converter_get_instance_private (gc_converter);
+
+	g_return_val_if_fail (ARV_IS_GC_CONVERTER (gc_converter), default_value);
+
+	if (priv->value == NULL)
+		return default_value;
+
+	return arv_gc_property_node_get_access_mode (ARV_GC_PROPERTY_NODE (priv->value), default_value);
+}

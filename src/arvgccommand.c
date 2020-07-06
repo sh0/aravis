@@ -26,6 +26,7 @@
  */
 
 #include <arvgccommand.h>
+#include <arvgccommandprivate.h>
 #include <arvgcinteger.h>
 #include <arvgcfeaturenodeprivate.h>
 #include <arvgcport.h>
@@ -122,6 +123,29 @@ arv_gc_command_execute (ArvGcCommand *gc_command, GError **error)
 	arv_log_genicam ("[GcCommand::execute] %s (0x%x)",
 			 arv_gc_feature_node_get_name (ARV_GC_FEATURE_NODE (gc_command)),
 			 command_value);
+}
+
+/**
+ * arv_gc_command_get_access_mode:
+ * @gc_command: a #ArvGcCommand
+ * @default_value: default #ArvGcAccessMode value
+ *
+ * Get allowed feature access mode.
+ *
+ * Returns: Allowed access mode as #ArvGcAccessMode.
+ *
+ * Since: 0.8.0
+ */
+
+ArvGcAccessMode
+arv_gc_command_get_access_mode (ArvGcCommand *gc_command, ArvGcAccessMode default_value)
+{
+	g_return_val_if_fail (ARV_IS_GC_COMMAND (gc_command), default_value);
+
+	if (gc_command->value == NULL)
+		return default_value;
+
+	return arv_gc_property_node_get_access_mode (ARV_GC_PROPERTY_NODE (gc_command->value), default_value);
 }
 
 ArvGcNode *
