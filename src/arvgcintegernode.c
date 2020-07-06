@@ -175,6 +175,27 @@ arv_gc_integer_node_new (void)
 	return node;
 }
 
+static ArvGcAccessMode
+arv_gc_integer_node_get_access_mode (ArvGcFeatureNode *gc_feature_node)
+{
+	ArvGcIntegerNode *gc_integer_node = NULL;
+	ArvGcNode *pvalue_node = NULL;
+	ArvGcFeatureNode *pvalue_feature = NULL;
+
+	g_return_val_if_fail (ARV_IS_GC_INTEGER_NODE (gc_feature_node), ARV_GC_ACCESS_MODE_RO);
+	gc_integer_node = ARV_GC_INTEGER_NODE (gc_feature_node);
+	if (gc_integer_node->value == NULL)
+		return ARV_GC_ACCESS_MODE_RO;
+
+	pvalue_node = arv_gc_property_node_get_linked_node (gc_integer_node->value);
+	g_return_val_if_fail (ARV_IS_GC_FEATURE_NODE (pvalue_node), ARV_GC_ACCESS_MODE_RO);
+
+	pvalue_feature = ARV_GC_FEATURE_NODE (pvalue_node);
+	if (ARV_GC_FEATURE_NODE_GET_CLASS (pvalue_feature)->get_access_mode == NULL)
+		return ARV_GC_ACCESS_MODE_RO;
+	return ARV_GC_FEATURE_NODE_GET_CLASS (pvalue_feature)->get_access_mode (pvalue_feature);
+}
+
 static void
 arv_gc_integer_node_init (ArvGcIntegerNode *gc_integer_node)
 {
@@ -197,11 +218,13 @@ arv_gc_integer_node_class_init (ArvGcIntegerNodeClass *this_class)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (this_class);
 	ArvDomNodeClass *dom_node_class = ARV_DOM_NODE_CLASS (this_class);
+	ArvGcFeatureNodeClass *gc_feature_node_class = ARV_GC_FEATURE_NODE_CLASS (this_class);
 
 	object_class->finalize = arv_gc_integer_node_finalize;
 	dom_node_class->get_node_name = arv_gc_integer_node_get_node_name;
 	dom_node_class->post_new_child = arv_gc_integer_node_post_new_child;
 	dom_node_class->pre_remove_child = arv_gc_integer_node_pre_remove_child;
+	gc_feature_node_class->get_access_mode = arv_gc_integer_node_get_access_mode;
 }
 
 /* ArvGcInteger interface implementation */
